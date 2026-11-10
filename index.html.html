@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PC-LAB — ห้องทดลองคอมพิวเตอร์</title>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f9ff;--card:#fff;--ink:#0b2545;--mute:#5b7391;--blue:#1d6fe0;--sky:#dbeeff;--line:#d3e5f8;--ok:#14935a;--bad:#d6404f;--warn:#d98a0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a1626;--card:#10233b;--ink:#e6f1ff;--mute:#9ab3d1;--sky:#16355a;--line:#24476f;--blue:#5aa5ff}}
+:root[data-theme=dark]{--bg:#0a1626;--card:#10233b;--ink:#e6f1ff;--mute:#9ab3d1;--sky:#16355a;--line:#24476f;--blue:#5aa5ff}
+*{box-sizing:border-box}html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;font:15px/1.6 Anuphan,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px}
+button:hover{border-color:var(--blue)}button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+button.p{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+#intro{position:fixed;inset:0;z-index:9;background:linear-gradient(#eaf5ff,#fff 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px;transition:opacity .6s}
+:root[data-theme=dark] #intro,@media(prefers-color-scheme:dark){}
+#intro svg{width:min(640px,92vw);height:auto}
+#intro h1{margin:0;font-size:clamp(30px,6vw,52px);letter-spacing:.02em;color:#0b2545}
+#intro p{margin:0 0 10px;color:#4d6683}
+#intro .p{font-size:18px;padding:12px 40px;border-radius:999px;box-shadow:0 8px 24px #1d6fe040}
+#app{display:none;height:100%}#app.on{display:flex}
+nav{width:210px;background:var(--card);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:6px}
+nav b{font-size:20px;padding:0 8px 12px;color:var(--blue)}
+nav button{text-align:left;border-color:transparent;background:none;padding:10px}
+nav button.on{background:var(--sky);color:var(--blue);font-weight:600}
+main{flex:1;overflow:auto;padding:22px;min-width:0}
+h2{margin:0 0 2px;font-size:24px}.sub{color:var(--mute);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px}
+#stage{height:460px;padding:0;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 30%,#fff,var(--sky))}
+#cv{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.hint{position:absolute;left:12px;bottom:8px;font-size:12px;color:var(--mute)}
+.steps{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.step{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;border:1px solid var(--line);cursor:pointer;font-size:14px}
+.step i{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.step.seen i{background:var(--blue)}.step.cur{border-color:var(--blue);background:var(--sky)}.step.cur i{box-shadow:0 0 0 5px #1d6fe044}
+.tag{display:inline-block;font-size:12px;background:var(--sky);color:var(--blue);padding:1px 10px;border-radius:99px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.opt{text-align:left;padding:10px;border-radius:12px}.opt.on{border:2px solid var(--blue);background:var(--sky)}
+.opt small{display:block;color:var(--mute);font-size:12.5px;line-height:1.4}
+.sec{margin:16px 0 6px;font-weight:600}
+.meter{height:16px;background:var(--sky);border-radius:99px;overflow:hidden}.meter div{height:100%;background:var(--ok);transition:width .3s,background .3s}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:10px 0}.tabs span{background:var(--sky);border-radius:8px 8px 0 0;padding:2px 10px;font-size:12px}
+.verdict{font-weight:600;padding:10px 12px;border-radius:10px;margin-top:10px}
+.q label{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0;cursor:pointer}
+.q label.ok{border-color:var(--ok);background:#14935a18}.q label.no{border-color:var(--bad);background:#d6404f18}
+.q em{display:block;font-style:normal;font-size:13px;color:var(--mute)}
+@media(max-width:820px){nav{position:fixed;bottom:0;left:0;right:0;width:auto;flex-direction:row;z-index:5;border-top:1px solid var(--line);border-right:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}nav b{display:none}nav button{flex:1;text-align:center;font-size:13px;padding:8px 2px}main{padding:14px 14px 80px}.grid{grid-template-columns:1fr}#stage{height:360px}}
+</style>
+</head>
+<body>
+<section id="intro">
+<svg viewBox="0 0 640 330" aria-label="โต๊ะคอมพิวเตอร์">
+<rect x="40" y="250" width="560" height="16" rx="6" fill="#c9dcf2"/><rect x="70" y="266" width="12" height="54" fill="#b3cae6"/><rect x="558" y="266" width="12" height="54" fill="#b3cae6"/>
+<rect x="190" y="50" width="260" height="165" rx="12" fill="#0b2545"/><rect x="200" y="60" width="240" height="145" rx="6" fill="#bfe0ff"/>
+<path d="M200 170 L270 120 L320 150 L370 100 L440 160 V205 H200Z" fill="#6fb3ff"/><circle cx="395" cy="90" r="14" fill="#fff"/>
+<rect x="305" y="215" width="30" height="24" fill="#8ba6c6"/><rect x="270" y="236" width="100" height="10" rx="5" fill="#8ba6c6"/>
+<rect x="215" y="226" width="14" height="0" /><rect x="235" y="248" width="170" height="0"/>
+<rect x="470" y="110" width="80" height="140" rx="8" fill="#fff" stroke="#9cc3ee" stroke-width="3"/><circle cx="510" cy="140" r="8" fill="#1d6fe0"/><rect x="486" y="170" width="48" height="3" fill="#9cc3ee"/><rect x="486" y="180" width="48" height="3" fill="#9cc3ee"/><rect x="486" y="190" width="48" height="3" fill="#9cc3ee"/>
+<rect x="215" y="236" width="150" height="14" rx="4" fill="#fff" stroke="#9cc3ee" stroke-width="2" transform="translate(0,-2)"/>
+<rect x="395" y="238" width="26" height="12" rx="6" fill="#fff" stroke="#9cc3ee" stroke-width="2"/>
+<rect x="110" y="200" width="46" height="50" rx="6" fill="#d8ecff"/><path d="M133 200 C115 170 125 150 133 140 C141 150 151 170 133 200Z" fill="#5fc79a"/>
+</svg>
+<h1>PC-LAB</h1><p>ห้องทดลองคอมพิวเตอร์ สำหรับคนที่อยากเข้าใจก่อนซื้อ</p>
+<button class="p" id="start">เริ่มเลย</button>
+</section>
+
+<div id="app">
+<nav><b>PC-LAB</b><button data-t="t1" class="on">1 · ส่องภายในคอม</button><button data-t="t2">2 · What If Lab</button><button data-t="t3">3 · โจทย์แก้ปัญหา</button></nav>
+<main>
+<div id="t1"><h2>ส่องภายในคอมพิวเตอร์</h2><p class="sub">ลากเพื่อหมุน · เลื่อนเมาส์เพื่อซูม · คลิกชิ้นส่วนเพื่อดูว่าคืออะไร</p>
+<div class="grid"><div><div class="bar"><button id="bOpen">เปิดฝาข้าง</button><button id="bEx">แยกส่วน</button><button class="p" id="bRun">เริ่มทำงาน</button></div>
+<div class="card" id="stage"><canvas id="cv"></canvas><span class="hint">ชิ้นที่เรืองแสงคือชิ้นที่กำลังทำงาน</span></div></div>
+<div class="card"><span class="tag" id="iTag">ชิ้นส่วน</span><h3 id="iName" style="margin:6px 0 2px"></h3><p id="iWhat" style="margin:0 0 8px"></p><p id="iDo" style="margin:0;color:var(--mute)"></p>
+<div class="sec">ลำดับการทำงานเมื่อกดเปิดเครื่อง</div><div class="steps" id="steps"></div><p id="stepTxt" class="verdict" style="background:var(--sky);display:none"></p></div></div></div>
+
+<div id="t2" hidden><h2>What If Lab</h2><p class="sub">ลองเลือกสเปก แล้วดูว่าเครื่องจะเป็นอย่างไรเมื่อใช้งานจริง</p>
+<div class="grid"><div class="card" id="cfg"></div>
+<div class="card"><div class="sec" style="margin-top:0">ทดลองเปิดแท็บเบราว์เซอร์</div><p style="margin:0;color:var(--mute)">กด + เหมือนเปิดเว็บใหม่ แล้วดูว่าเครื่องรับไหวไหม</p>
+<div class="bar" style="margin-top:8px"><button class="p" id="tabAdd">+ เปิดแท็บ</button><button id="tabDel">− ปิดแท็บ</button></div><div class="tabs" id="tabs"></div>
+<div>หน่วยความจำ (แรม) ที่ใช้อยู่: <b id="memTxt"></b></div><div class="meter"><div id="memBar"></div></div><div class="verdict" id="vd"></div>
+<div class="sec">สรุปสเปกนี้</div><div id="sum" style="color:var(--mute)"></div></div></div></div>
+
+<div id="t3" hidden><h2>โจทย์แก้ปัญหา</h2><p class="sub">ติ๊กทุกวิธีที่คิดว่าช่วยแก้ได้ แล้วกดตรวจคำตอบ ถูกและผิดจะมีคำอธิบาย</p><div id="qs"></div></div>
+</main></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+$('#start').onclick=()=>{$('#intro').style.opacity=0;setTimeout(()=>$('#intro').remove(),600);$('#app').classList.add('on');fit()};
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.classList.toggle('on',x==b));['t1','t2','t3'].forEach(t=>$('#'+t).hidden=t!=b.dataset.t);fit()});
+
+/* ---------- 3D ---------- */
+const P={
+psu:{n:'พาวเวอร์ซัพพลาย (PSU)',w:'กล่องแปลงไฟจากเต้าเสียบเป็นไฟที่ชิ้นส่วนใช้ได้',d:'เป็นต้นทางของพลังงาน ถ้าไม่มี PSU ทุกชิ้นจะไม่ทำงาน',s:'ไฟจากเต้าเสียบเข้า PSU แล้วจ่ายไฟไปทุกชิ้นส่วน',c:0xf2f6fb,p:[0,-1.2,-.85],e:[0,-.9,-.4]},
+ssd:{n:'SSD (ที่เก็บข้อมูล)',w:'ที่เก็บ Windows โปรแกรม และไฟล์ของเรา ปิดเครื่องแล้วข้อมูลก็ยังอยู่',d:'ยิ่งเร็ว เครื่องยิ่งเปิดติดไว',s:'ดึงระบบปฏิบัติการ (Windows) ออกมาจาก SSD เพื่อเริ่มเปิดเครื่อง',c:0x39b36b,p:[-.55,-.65,-.95],e:[1.1,-.5,-.3]},
+ram:{n:'แรม (RAM)',w:'โต๊ะทำงานชั่วคราวของคอม ใช้วางสิ่งที่กำลังเปิดอยู่',d:'แรมมาก = เปิดหลายโปรแกรมพร้อมกันได้ ปิดเครื่องแล้วข้อมูลในแรมหาย',s:'โหลดโปรแกรมที่กำลังใช้ขึ้นมาวางบนแรม เพื่อให้ CPU หยิบใช้ได้เร็ว',c:0x6b5be6,p:[-.62,.6,-.65],e:[1.5,.9,-.5]},
+cpu:{n:'ซีพียู (CPU)',w:'สมองของคอม คิดคำนวณและสั่งงานชิ้นอื่น',d:'CPU แรง = ประมวลผลเร็ว แต่ทำงานไม่ได้ถ้าไม่มีแรมและ SSD ช่วย',s:'CPU อ่านคำสั่งจากแรมแล้วคิดคำนวณ เช่น เปิดโปรแกรม ตอบสนองการคลิก',c:0xe8a321,p:[-.6,.6,.35],e:[1.3,.5,.5]},
+gpu:{n:'การ์ดจอ (GPU)',w:'ชิ้นที่วาดภาพทั้งหมดที่เห็นบนจอ ทั้งเกม วิดีโอ และงานออกแบบ',d:'ถ้าแค่พิมพ์งาน ใช้การ์ดจอในตัว CPU ก็พอ',s:'GPU แปลงผลที่ CPU คิดเป็นภาพ แล้วส่งไปแสดงที่จอ',c:0x1d6fe0,p:[-.45,-.15,.3],e:[1.9,-.1,.6]},
+mb:{n:'เมนบอร์ด',w:'แผ่นวงจรที่เชื่อมทุกชิ้นส่วนเข้าด้วยกัน',d:'เหมือนถนนที่ให้ข้อมูลวิ่งระหว่างชิ้นส่วน',s:'เป็นเส้นทางส่งข้อมูลและไฟระหว่างชิ้นส่วน',c:0x2f6fbf,p:[-.74,0,0],e:[.5,0,0]}};
+const order=['psu','ssd','ram','cpu','gpu'];
+const cv=$('#cv'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}),S=new THREE.Scene(),C=new THREE.PerspectiveCamera(40,1,.1,60);
+S.add(new THREE.HemisphereLight(0xffffff,0x8fb8e8,1));const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(4,6,5);S.add(dl);
+const pc=new THREE.Group();pc.rotation.set(.15,-.7,0);S.add(pc);
+const mk=(w,h,d,c,o)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5,metalness:.15},o)));
+const sh=[[.06,3,3,-.8,0,0],[1.6,.06,3,0,-1.5,0],[1.6,.06,3,0,1.5,0],[1.6,3,.06,0,0,-1.5],[1.6,3,.06,0,0,1.5]];
+sh.forEach(a=>{const m=mk(a[0],a[1],a[2],0xffffff);m.position.set(a[3],a[4],a[5]);pc.add(m)});
+const piv=new THREE.Group();piv.position.set(.8,0,1.5);pc.add(piv);const side=mk(.05,3,3,0x9fd0ff,{transparent:true,opacity:.35});side.position.z=-1.5;piv.add(side);
+const parts={},hit=[];
+for(const k in P){const g=new THREE.Group(),m=mk(1,1,1,P[k].c,{emissive:0x2e9bff,emissiveIntensity:0});
+ const add=(x,y,z,w,h,d)=>{const o=new THREE.Mesh(m.geometry,m.material);o.scale.set(w,h,d);o.position.set(x,y,z);o.userData.k=k;g.add(o);hit.push(o)};
+ if(k=='psu')add(0,0,0,1.2,.5,1.2);if(k=='ssd')add(0,0,0,.12,.14,.55);if(k=='gpu'){add(0,0,0,.3,.22,1.5);add(.12,0,.3,.16,.18,.45)}
+ if(k=='ram'){add(0,0,0,.06,.9,.07);add(0,0,-.16,.06,.9,.07)}if(k=='cpu'){add(0,0,0,.1,.45,.45);add(.2,0,0,.28,.55,.55)}
+ if(k=='mb')add(0,0,0,.05,2.7,2.7);g.position.set(...P[k].p);pc.add(g);parts[k]={g,m:m.material,base:new THREE.Vector3(...P[k].p),ex:new THREE.Vector3(...P[k].e),glow:0,tg:0}}
+let open=0,exp=0,openT=0,expT=0,cur=-1,seen=-1,sel='cpu',timer=null,camZ=9;
+function info(k){sel=k;const p=P[k];$('#iName').textContent=p.n;$('#iWhat').textContent=p.w;$('#iDo').textContent=p.d}info('cpu');
+function fit(){const w=cv.clientWidth,h=cv.clientHeight;if(!w)return;R.setSize(w,h,false);R.setPixelRatio(Math.min(devicePixelRatio,2));C.aspect=w/h;C.updateProjectionMatrix()}
+new ResizeObserver(fit).observe($('#stage'));
+$('#bOpen').onclick=()=>{openT=openT?0:1;$('#bOpen').textContent=openT?'ปิดฝาข้าง':'เปิดฝาข้าง'};
+$('#bEx').onclick=()=>{expT=expT?0:1;if(expT)openT=1;$('#bEx').textContent=expT?'รวมกลับ':'แยกส่วน';$('#bOpen').textContent=openT?'ปิดฝาข้าง':'เปิดฝาข้าง'};
+const st=$('#steps');order.forEach((k,i)=>{const d=document.createElement('div');d.className='step';d.innerHTML='<i></i>'+(i+1)+'. '+P[k].n;d.onclick=()=>go(i,true);st.appendChild(d)});
+function go(i,manual){if(manual)stop();cur=i;seen=Math.max(seen,i);openT=1;const k=order[i];info(k);
+ $$('.step').forEach((e,j)=>{e.classList.toggle('cur',j==i);e.classList.toggle('seen',j<=seen)});
+ order.forEach((o,j)=>parts[o].tg=j==i?1:j<i?.3:0);const t=$('#stepTxt');t.style.display='block';t.textContent='ขั้นที่ '+(i+1)+': '+P[k].s}
+function stop(){clearInterval(timer);timer=null;$('#bRun').textContent='เริ่มทำงาน'}
+$('#bRun').onclick=()=>{if(timer){stop();return}$('#bRun').textContent='หยุด';seen=-1;let i=0;go(0);timer=setInterval(()=>{i++;if(i>=order.length){stop();order.forEach(o=>parts[o].tg=.3);return}go(i)},3200)};
+let dn=null,mv=0;cv.onpointerdown=e=>{dn=[e.clientX,e.clientY];mv=0;cv.setPointerCapture(e.pointerId)};
+cv.onpointermove=e=>{if(!dn)return;const dx=e.clientX-dn[0],dy=e.clientY-dn[1];mv+=Math.abs(dx)+Math.abs(dy);pc.rotation.y+=dx*.008;pc.rotation.x=Math.max(-.8,Math.min(.8,pc.rotation.x+dy*.006));dn=[e.clientX,e.clientY]};
+cv.onpointerup=e=>{dn=null;if(mv<5){const r=cv.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),rc=new THREE.Raycaster();rc.setFromCamera(v,C);const h=rc.intersectObjects(hit)[0];if(h)info(h.object.userData.k)}};
+cv.addEventListener('wheel',e=>{e.preventDefault();camZ=Math.max(5,Math.min(14,camZ+e.deltaY*.005))},{passive:false});
+(function loop(t){requestAnimationFrame(loop);if(!cv.clientWidth)return;openT>open?open=Math.min(openT,open+.03):open=Math.max(openT,open-.03);exp+=(expT-exp)*.08;piv.rotation.y=-1.9*open;C.position.set(0,0,camZ);
+ for(const k in parts){const p=parts[k];p.g.position.copy(p.base).addScaledVector(p.ex,exp);p.glow+=(p.tg-p.glow)*.1;const pulse=p.tg==1?.7+.3*Math.sin(t/180):1;p.m.emissiveIntensity=(k==sel&&!timer?.25:0)+p.glow*.9*pulse}
+ R.render(S,C)})(0);
+
+/* ---------- What If Lab ---------- */
+const cfgD={ram:{t:'แรม (RAM) — โต๊ะทำงานของคอม',o:[[4,'4 GB','โต๊ะเล็ก เหมาะแค่เว็บและพิมพ์งานเบาๆ'],[8,'8 GB','พอใช้ทั่วไป เปิดหลายแท็บได้พอควร'],[16,'16 GB','โต๊ะกว้าง เปิดหลายโปรแกรมพร้อมกันได้สบาย'],[32,'32 GB','สำหรับงานหนัก ตัดต่อวิดีโอ ออกแบบ']]},
+cpu:{t:'ซีพียู (CPU) — สมองของคอม',o:[[1,'พื้นฐาน','คิดช้ากว่า เหมาะงานเอกสารและดูวิดีโอ'],[2,'ระดับกลาง','ใช้งานทั่วไปลื่น เล่นเกมเบาๆ ได้'],[3,'ระดับสูง','คิดเร็ว เหมาะงานตัดต่อและเกมใหญ่']]},
+disk:{t:'ที่เก็บข้อมูล — ตู้เก็บเอกสาร',o:[['hdd','HDD (จานหมุน)','ถูก จุเยอะ แต่เปิดเครื่องช้า'],['ssd','SSD','แพงกว่า แต่เปิดเครื่องและโปรแกรมไวกว่ามาก']]},
+gpu:{t:'การ์ดจอ — คนวาดภาพขึ้นจอ',o:[[0,'ในตัว CPU','พอสำหรับงานทั่วไปและดูหนัง'],[1,'การ์ดจอแยก','จำเป็นถ้าเล่นเกมหรือทำงานกราฟิก']]}};
+const sp={ram:8,cpu:2,disk:'ssd',gpu:0};let tabs=3;
+function drawCfg(){$('#cfg').innerHTML=Object.keys(cfgD).map(k=>`<div class="sec" style="margin-top:${k=='ram'?0:16}px">${cfgD[k].t}</div><div class="opts">${cfgD[k].o.map(o=>`<button class="opt ${sp[k]==o[0]?'on':''}" data-k="${k}" data-v="${o[0]}"><b>${o[1]}</b><small>${o[2]}</small></button>`).join('')}</div>`).join('');
+ $$('.opt').forEach(b=>b.onclick=()=>{const k=b.dataset.k,v=b.dataset.v;sp[k]=isNaN(v)?v:+v;drawCfg();sim()})}
+function sim(){const used=3.5+tabs*.5*(sp.cpu==1?1.15:1),pct=Math.min(100,used/sp.ram*100);$('#tabs').innerHTML=Array.from({length:Math.min(tabs,40)},(_,i)=>`<span>แท็บ ${i+1}</span>`).join('');
+ $('#memTxt').textContent=used.toFixed(1)+' / '+sp.ram+' GB';const b=$('#memBar');b.style.width=pct+'%';const v=$('#vd');
+ let c='var(--ok)',t='ลื่นไหล เครื่องรับไหวสบายๆ';if(used>sp.ram){c='var(--bad)';t='แรมเต็ม! เครื่องต้องใช้ที่เก็บข้อมูลมาช่วยแทน จึงช้า กระตุก หรือค้าง'+(sp.disk=='hdd'?' (HDD ทำให้ค้างหนักกว่า)':'')}else if(pct>80){c='var(--warn)';t='เริ่มหน่วงแล้ว แรมใกล้เต็ม'}
+ b.style.background=c;v.style.color=c;v.style.background='var(--sky)';v.textContent=t;
+ $('#sum').innerHTML=`เปิดเครื่อง ~${sp.disk=='ssd'?'12':'60'} วินาที · งานเอกสาร/เว็บ: ${sp.cpu>1||sp.ram>=8?'ดี':'พอใช้'} · เล่นเกม: ${sp.gpu?(sp.cpu>1?'ได้ดี':'ได้ แต่ CPU เป็นคอขวด'):'ไม่เหมาะ'} · ตัดต่อวิดีโอ: ${sp.ram>=16&&sp.cpu>=2?'ไหว':'จะช้า'}`}
+$('#tabAdd').onclick=()=>{tabs=Math.min(40,tabs+1);sim()};$('#tabDel').onclick=()=>{tabs=Math.max(1,tabs-1);sim()};drawCfg();sim();
+
+/* ---------- Challenges ---------- */
+const Q=[
+{q:'เปิดเครื่องแล้วมีเสียง "ติ๊ดๆ" ซ้ำๆ และจอไม่ขึ้นภาพ ควรทำอะไรบ้าง?',beep:1,a:[[1,'ถอดแรมออก แล้วเสียบใหม่ให้แน่น','เสียงติ๊ดมักบอกว่าเมนบอร์ดหาแรมไม่เจอ แรมหลวมเป็นสาเหตุที่พบบ่อยสุด'],[1,'เช็ดขาทองของแรมเบาๆ แล้วลองเสียบอีกช่อง','ฝุ่นหรือหน้าสัมผัสสกปรกทำให้สัญญาณไม่ผ่าน'],[0,'เปลี่ยนเมาส์ใหม่','เมาส์ไม่เกี่ยวกับการเริ่มเครื่อง'],[0,'ลง Windows ใหม่','ยังเปิดไม่ติด ระบบปฏิบัติการจึงยังไม่ใช่ปัญหา']]},
+{q:'คอมช้าและค้างเมื่อเปิดหลายโปรแกรมพร้อมกัน แก้ได้อย่างไร?',a:[[1,'เพิ่มแรม','โต๊ะทำงานใหญ่ขึ้น วางงานได้มากขึ้น'],[1,'ปิดโปรแกรมและแท็บที่ไม่ได้ใช้','ช่วยคืนพื้นที่แรมได้ทันที ฟรี'],[1,'เปลี่ยนจาก HDD เป็น SSD','ช่วยให้เครื่องช้าน้อยลงตอนแรมเต็ม'],[0,'ซื้อลำโพงตัวใหม่','ลำโพงไม่มีผลกับความเร็ว']]},
+{q:'เล่นเกมไปสักพักเครื่องดับเอง พัดลมดังมาก ตัวเครื่องร้อน ควรทำอะไร?',a:[[1,'ทำความสะอาดฝุ่นในเครื่อง','ฝุ่นอุดตันทำให้ระบายความร้อนไม่ทัน'],[1,'ตรวจพัดลมและฮีตซิงก์ของ CPU','ถ้าพัดลมเสียหรือหลวม CPU จะร้อนจนเครื่องตัดการทำงานเพื่อป้องกันตัวเอง'],[0,'เพิ่มแรม','ไม่ได้แก้ปัญหาความร้อน'],[0,'เปลี่ยนคีย์บอร์ด','คีย์บอร์ดไม่เกี่ยวกับความร้อน']]},
+{q:'กดปุ่มเปิดเครื่องแล้วไม่มีอะไรเกิดขึ้นเลย ไฟไม่ติด ควรตรวจอะไร?',a:[[1,'เช็กสายไฟและสวิตช์ด้านหลัง PSU','ถ้าไม่มีไฟเข้า ทุกชิ้นจะไม่ทำงาน'],[1,'ตรวจสายปุ่มเพาเวอร์ที่ต่อกับเมนบอร์ด','สายหลุดทำให้กดแล้วเครื่องไม่รับสัญญาณ'],[0,'เปลี่ยนการ์ดจอ','ถ้าไฟยังไม่เข้า การ์ดจอไม่ใช่ต้นเหตุ'],[0,'ลงโปรแกรมแอนติไวรัส','เครื่องยังไม่เริ่มทำงานจึงยังไม่เกี่ยวกับซอฟต์แวร์']]}];
+$('#qs').innerHTML=Q.map((q,i)=>`<div class="card q" style="margin-bottom:14px" id="q${i}"><b>โจทย์ ${i+1}: ${q.q}</b>${q.beep?'<div><button onclick="beep()" style="margin-top:6px">▶ ฟังเสียง</button></div>':''}${q.a.map((a,j)=>`<label><input type="checkbox" data-j="${j}"><span>${a[1]}<em hidden></em></span></label>`).join('')}<button class="p" onclick="chk(${i})">ตรวจคำตอบ</button> <span class="verdict" id="r${i}" hidden></span></div>`).join('');
+function chk(i){let right=0,all=Q[i].a.length;$$('#q'+i+' label').forEach((l,j)=>{const a=Q[i].a[j],on=l.querySelector('input').checked,ok=!!a[0]==on;right+=ok;l.className=ok?'ok':'no';const e=l.querySelector('em');e.hidden=false;e.textContent=(a[0]?'✓ วิธีที่ช่วยได้: ':'✗ ไม่ช่วย: ')+a[2]});const r=$('#r'+i);r.hidden=false;r.textContent=`ถูก ${right}/${all} ข้อ`}
+function beep(){try{const A=new AudioContext();[0,.4,.8].forEach(t=>{const o=A.createOscillator(),g=A.createGain();o.frequency.value=900;g.gain.value=.15;o.connect(g).connect(A.destination);o.start(A.currentTime+t);o.stop(A.currentTime+t+.25)})}catch(e){}}
+</script>
+</body>
+</html>
